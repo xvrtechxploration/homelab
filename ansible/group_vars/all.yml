@@ -1,0 +1,50 @@
+---
+# Multi-host homelab configuration
+homelab_base: /opt/homelab
+timezone: America/Chicago
+
+# Desktop storage paths (Dell OptiPlex)
+debian_storage:
+  ssd_path: /opt/homelab
+  hdd_path: /media/debian-500gbhdd
+  media_path: /media/2tbdrive/data
+  backup_path: /media/backupdrive
+
+# Pi storage paths
+pi_storage:
+  config_path: /opt/pi-configs
+  backup_path: /opt/pi-backups
+
+# Docker Networks (debian only)
+docker_networks:
+  - name: vpn-net
+    subnet: 172.20.0.0/16
+  - name: media-net
+    subnet: 172.21.0.0/16
+  - name: web-services
+    subnet: 172.22.0.0/16
+  - name: monitoring
+    subnet: 172.23.0.0/16
+  - name: proxy
+    subnet: 172.24.0.0/16
+  - name: management
+    subnet: 172.25.0.0/16
+
+# ExpressVPN configuration
+expressvpn:
+  provider: expressvpn
+  regions: "USA - New York,USA - Chicago"
+
+# Required packages per host
+required_packages:
+  debian:
+    - docker.io
+    - python3-docker
+    - htop
+    - curl
+    - rsync  
+  pi: 
+    - python3-pip
+    - htop
+    - curl
+    - rsync

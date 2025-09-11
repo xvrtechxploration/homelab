@@ -1,0 +1,26 @@
+---
+# Raspberry Pi 4B specific configuration
+hardware:
+  cpu: "ARM Cortex-A72"
+  cores: 4
+  ram_gb: 8
+  architecture: "aarch64"
+  
+# Services this host will run
+primary_services:
+  - pihole
+  - pivpn
+  - home-assistant
+  - basic-monitoring
+  
+# Pi-hole configuration
+pihole_config:
+  enable_dhcp: false  # Enable later after migration
+  upstream_dns:
+    - "1.1.1.1"
+    - "1.0.0.1"
+  interface: eth0
+  
+# System settings  
+system:
+  timezone: "America/Chicago"

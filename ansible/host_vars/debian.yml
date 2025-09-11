@@ -1,0 +1,30 @@
+---
+# Dell OptiPlex 390 specific configuration
+hardware:
+  cpu: "Intel i7-2600"
+  cores: 8
+  ram_gb: 16
+  architecture: "x86_64"
+  
+storage:
+  ssd_size_gb: 250
+  hdd_size_gb: 500
+  
+# Services this host will run
+primary_services:
+  - vpn-stack
+  - media-stack
+  - web-services
+  - monitoring
+  - management
+  
+# Plex hardware transcoding support
+plex_config:
+  hardware_transcoding: true
+  devices:
+    - /dev/dri:/dev/dri
+    
+# System settings
+system:
+  swap_size: "2G"
+  timezone: "America/Chicago"

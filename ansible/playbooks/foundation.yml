@@ -1,0 +1,126 @@
+---
+- name: Setup homelab foundation on debian
+  hosts: debian
+  become: true 
+  vars_files:
+    - ../group_vars/all.yml
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    # Add this task BEFORE the package installation in foundation.yml
+    - name: Remove conflicting Docker packages
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: absent
+        purge: yes
+      ignore_errors: true
+
+    - name: Debug required_packages variable
+      debug:
+        msg: "Packages for debian = {{ required_packages['debian'] | default('MISSING') }}"
+
+    - name: Install required packages for debian
+      apt:
+        name: "{{ required_packages['debian'] }}"
+        state: present
+
+    - name: Install Docker Compose V2
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/v2.29.0/docker-compose-linux-x86_64"
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+        
+    - name: Add user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+        
+    - name: Create homelab directory structure (SSD)
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+      loop:
+        - "{{ homelab_base }}/configs"
+        - "{{ homelab_base }}/local-backups"
+        
+    - name: Create debian HDD directory structure
+      file: 
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+      loop:
+        - "{{ debian_storage.hdd_path }}/local-backups"
+        - "{{ debian_storage.hdd_path }}/docker-volumes"
+        -  "{{ debian_storage.hdd_path }}/scratch"
+
+    - name: Create Docker Networks
+      docker_network:
+        name: "{{ item.name }}"
+        ipam_config:
+          - subnet: "{{ item.subnet }}"
+        state: present
+      loop: "{{ docker_networks  }}"
+
+    - name: Verify Docker service is running
+      systemd:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Display debian setup completion
+      debug:
+        msg:
+          - "Debian foundation setup complete!"
+          - "Networks created: {{ docker_networks | map(attribute='name') | list }}"
+          - "Ready for drive migration phase"
+
+- name: Setup basic Pi infrastructure
+  hosts: pi 
+  become: true
+  vars_files:
+    - ../group_vars/all.yml
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install required packages for pi
+      apt:
+        name: "{{ required_packages['pi'] }}"
+        state: present
+
+    - name: Create Pi configuration directories
+      file:
+        path: "{{ item }}" 
+        state: directory
+        owner: "{{ ansible_user }}" 
+        group: "{{ ansible_user }}" 
+        mode: '0755'
+      loop:
+        - "{{ pi_storage.config_path }}" 
+        - "{{ pi_storage.backup_path }}" 
+
+    - name: Display Pi setup completion
+      debug:
+        msg:
+          - "Pi infrastructure ready!"
+          - "Configuration directories created"
+          - "Ready for Home Assistant deployment in later phase" 
+        

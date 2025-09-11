@@ -1,0 +1,28 @@
+---
+- name: Prepare for drive migration
+  hosts: desktop
+  become: yes
+  
+  tasks:
+    - name: Create mount points for migrated drives
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "{{ desktop_storage.media_path | dirname }}"  # /media/2tbdrive
+        - "{{ desktop_storage.backup_path }}"           # /media/backupdrive
+
+    - name: Display drive migration readiness
+      debug:
+        msg: 
+          - "Mount points created for migrated drives"
+          - "Ready to mount: {{ desktop_storage.media_path | dirname }}"
+          - "Ready to mount: {{ desktop_storage.backup_path }}"
+          - "Next: Physically move drives and mount them"
+
+# Future tasks after drives are physically moved:
+# - Mount drives with proper UUIDs
+# - Update /etc/fstab for permanent mounts
+# - Verify data integrity
+# - Set proper permissions
