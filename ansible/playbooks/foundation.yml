@@ -2,8 +2,6 @@
 - name: Setup homelab foundation on debian
   hosts: debian
   become: true 
-  vars_files:
-    - ../group_vars/all.yml
 
   tasks:
     - name: Update apt cache
@@ -26,7 +24,7 @@
 
     - name: Debug required_packages variable
       debug:
-        msg: "Packages for debian = {{ required_packages['debian'] | default('MISSING') }}"
+        msg: "Packages for debian = {{ required_packages['debian'] }}" 
 
     - name: Install required packages for debian
       apt:

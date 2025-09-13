@@ -33,7 +33,17 @@ docker_networks:
 # ExpressVPN configuration
 expressvpn:
   provider: expressvpn
+  username: "{{ vault_expressvpn_username }}"
+  password: "{{ vault_expressvpn_password }}"
   regions: "USA - New York,USA - Chicago"
+
+homelab_user:
+  puid: "{{ vault_puid }}"
+  pgid: "{{ vault_pgid }}"
+  timezone: "{{ vault_timezone }}"
+
+plex:
+  claim_token: "{{ vault_plex_claim_token }}"
 
 # Required packages per host
 required_packages:
