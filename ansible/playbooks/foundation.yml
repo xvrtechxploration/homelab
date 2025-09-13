@@ -2,6 +2,9 @@
 - name: Setup homelab foundation on debian
   hosts: debian
   become: true 
+  vars_files:
+    - ../group_vars/all.yml
+    - ../group_vars/vault.yml
 
   tasks:
     - name: Update apt cache
