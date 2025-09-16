@@ -25,4 +25,4 @@ pihole_config:
 system:
   timezone: "America/Chicago"
 
-ansible_become_password: "{{ vault_pi_sudo_password }}"
+# ansible_become_password: "{{ vault_pi_sudo_password }}"

@@ -3,6 +3,9 @@
 homelab_base: /opt/homelab
 timezone: America/Chicago
 
+# Host-specific passwords
+ansible_become_password: "{{ vault_pi_sudo_password if inventory_hostname == 'pi' else vault_debian_sudo_password }}"
+
 # Desktop storage paths (Dell OptiPlex)
 debian_storage:
   ssd_path: /opt/homelab
